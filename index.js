@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const port = 5000
 
+const {auth} = require('./middleware/auth')
+
 const cookieParser = require('cookie-parser')
 
 const config = require('./config/key')
@@ -81,15 +83,47 @@ app.post('/api/users/login', (req, res) => {
                  res.cookie("x_auth", user.token)
                  .status(200)
                  .json({loginSuccess: true, userId: user._id})
-
             })
-
         })
+    })
+})
 
+
+
+// Auth
+app.get('/api/users/auth', auth, (req, res) => {
+
+    // 여기까지 미들웨어를 통과해 왔다는 이야기는
+    // Authentication이 true라는 말
+    res.status(200).json({
+        _id: req.user._id,
+
+        // role이 0이면 일반유저,  role이 0이 아니면 관리자
+        isAdmin: req.user.role === 0 ? false : true,
+        isAuth: true,
+        email: req.user.email,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        role: req.user.role,
+        image: req.user.image
     })
 
 })
 
 
 
-app.listen(port, () => console.log(`Express app listening on port ${port}`))
+app.get('/api/users/logout', auth, (req, res) => {
+
+    User.findOneAndUpdate({ _id: req.user._id }, 
+        { token: "" },
+        (err, user) => {
+            if(err) return res.json({ success: false, err})
+            return res.status(200).send({
+                success: true
+            })
+        })
+})
+
+
+
+app.listen(port, () => console.log(`Express app listening on port ${port}`))    

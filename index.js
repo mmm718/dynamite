@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const port = 5000
 
+const cookieParser = require('cookie-parser')
 
 const config = require('./config/key')
 
@@ -13,6 +14,8 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 // aplication/json
 app.use(bodyParser.json())
+
+app.use(cookieParser())
 
 
 // const mongoose = require('mongoose')
@@ -37,7 +40,7 @@ app.get('/', (req, res) => res.send('안녕하세요.'))
 
 
 // register router
-app.post('/register', (req, res) => {
+app.post('/api/users/register', (req, res) => {
     // 회원 가입 할 때 필요한 정보들을 클라이언트에서 가져오면
     // 그것들을 DB에 넣어준다.
 
@@ -52,7 +55,7 @@ app.post('/register', (req, res) => {
 })
 
 
-app.post('/login', (req, res) => {
+app.post('/api/users/login', (req, res) => {
 
     // 요청된 이메일을 DB에서 있는지 찾는다.(중복확인)
     User.findOne({ email: req.body.email }, (err, user) => {
@@ -66,12 +69,19 @@ app.post('/login', (req, res) => {
 
         // 요청된 이메일이 DB에 있다면 비밀번호가 맞는지 확인
         user.comparePassword( req.body.password, (err, isMatch) => {
-            if(isMatch)
+            if(!isMatch)
             return res.json({ loginSuccess: false, message: "비밀번호를 확인해주세요."})
 
             // 비밀번호가 맞다면 토큰을 생성
             user.generateToken((err, user) => {
+                if(err) return res.status(400).send(err)
                 
+                // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 섹션
+                // 쿠키에 저장
+                 res.cookie("x_auth", user.token)
+                 .status(200)
+                 .json({loginSuccess: true, userId: user._id})
+
             })
 
         })

@@ -57,6 +57,20 @@ userSchema.pre('save', function( next ) {
 })
 
 
+userSchema.methods.comparePassword = function(planPassword, cb) {
+    // planPassword 1234567외 
+    // 암호화된 비밀번호 $2b$10$Cf6NHBOpihzPNKlvYRdEZ.ywlFTWaEyzDoQvU0Hj/B43dssckt5lW
+    // 같은지 체크
+    bcrypt.compare(planPassword, this.password, function(err, isMatch) {
+        if(err) return cb(err),
+        db(null, isMatch)
+    })
+
+
+}
+
+
+
 const User = mongoose.model('User', userSchema)
 
 module.exports = {User}

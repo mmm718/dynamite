@@ -40,6 +40,11 @@ mongoose.connect(config.mongoURI, {
 app.get('/', (req, res) => res.send('안녕하세요.'))
 
 
+app.get('/api/hello', (req, res) => {
+    res.send("안녕.")
+})
+
+
 
 // register router
 app.post('/api/users/register', (req, res) => {

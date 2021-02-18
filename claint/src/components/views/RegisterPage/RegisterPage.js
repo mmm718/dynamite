@@ -11,7 +11,7 @@ function RegisterPage(props) {
     
     const [Email, setEmail] = useState("")
     const [Name, setName] = useState("")
-    const [Password, setPaswword] = useState("")
+    const [Password, setPassword] = useState("")
     const [ConfirmPassword, setConfirmPassword] = useState("")
     
 
@@ -25,7 +25,7 @@ function RegisterPage(props) {
     }
 
     const onPasswordHandler = (event) => {
-        setPaswword(event.currentTarget.value)
+        setPassword(event.currentTarget.value)
     }
 
     const onConfirmPasswordHandler = (event) => {

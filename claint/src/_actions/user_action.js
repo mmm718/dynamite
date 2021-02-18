@@ -13,3 +13,17 @@ export function loginUser(dataTosubmit) {
         }
 
 }
+
+
+export function registerUser(dataTosubmit) {
+    
+    const request = axios.post('/api/users/register', dataTosubmit)
+        .then(response => response.data)
+
+        return {
+            // reducer 보내기
+            type: "REGISTER_USER",
+            payload: request
+        }
+
+}
